@@ -1,0 +1,44 @@
+FRONTIER MAX — TWO-MINUTE PITCH
+Target runtime: 1:50–2:00
+
+[0:00–0:18 | Problem]
+
+Benchmarks are everywhere, but model decisions are still made from screenshots. A leaderboard tells us who won one evaluation contract. It does not tell us what should run this job, under this quality bar, budget, waiting time, and context limit.
+
+[0:18–0:34 | Product]
+
+Frontier Max is the decision and provenance layer for AI model selection. We make benchmark evidence interpretable, then actionable. In one line: from benchmark to runtime.
+
+[0:34–1:05 | Demo]
+
+Here is the same coding frontier under two real workloads. I enter, “Fix a flaky authentication test while I pair.” Gemini reads the intent and proposes our interactive policy. Deterministic code validates that policy, then requests the fastest available model in OpenRouter’s current high Artificial Analysis coding tier, ranked by p50 throughput.
+
+Now I enter, “Migrate thirty endpoints overnight and open a verified PR.” Gemini selects delegated work. The quality tier stays high, but the binding resource changes, so the route requests the cheapest available model in that tier.
+
+[1:05–1:28 | Trust and technical design]
+
+Gemini interprets semantics; it does not invent the route. A versioned manifest owns the executable decision. Frontier Max keeps the benchmark source and transformation visible, requests a sticky OpenRouter session for OpenCode, and writes a content-free local receipt. We do not proxy prompts, repositories, keys, diffs, or model responses.
+
+[1:28–1:45 | Business]
+
+The free product is an open benchmark catalog and local CLI. Teams pay for a shared policy workspace, API, governance controls, and auditable routing across providers. The wedge is coding; the same system extends to real-time, batch, continuous, privacy-bound, and long-horizon work.
+
+[1:45–2:00 | Team and ask]
+
+I’m Monil. I spent seven years at Meta and now build applied AI systems across evaluation, post-training, and coding agents. We are looking for five design partners, Google Cloud support, and investors who believe model choice should be evidence-backed infrastructure—not leaderboard folklore.
+
+END CARD
+
+FRONTIER MAX
+From benchmark to runtime.
+Current prototype: https://agent-frontier.monilpat.chatgpt.site
+
+RECORDING NOTE: The Sites URL is the current prototype and backup mirror. Replace it on the final end card with the verified public Cloud Run URL after that deployment is created and tested while signed out.
+
+DELIVERY NOTES
+
+- Speak at a measured 145–155 words per minute.
+- Pause for one beat after “interpretable, then actionable.”
+- Show the two task briefs and policy outputs while naming them.
+- If the live route is only a dry run, say “requests,” never “ran.”
+- Do not claim verified cost per successful task, time to accepted change, or a concrete serving model.

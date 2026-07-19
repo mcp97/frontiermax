@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v1/support-offer.schema.json",
+  "title": "Frontier Max Support Offer v1",
+  "description": "Export contract for a complete, portable, non-binding support worksheet. Conformance does not mean money or credits were collected, pledged, or received. The builder may display a non-conforming incomplete preview before export.",
+  "type": "object",
+  "required": ["schema", "status", "completeness", "submission", "supporter", "target_benchmark_url", "support", "public_label", "ranking_influence"],
+  "properties": {
+    "schema": { "const": "agent-frontier/support-offer/v1" },
+    "status": { "const": "non_binding_portable_draft" },
+    "completeness": { "const": "ready_to_export" },
+    "submission": {
+      "type": "object",
+      "required": ["state", "delivery_method", "intake_url", "submitted_at"],
+      "properties": {
+        "state": { "const": "not_submitted" },
+        "delivery_method": { "const": "copy_or_download_only" },
+        "intake_url": { "const": null },
+        "submitted_at": { "const": null }
+      },
+      "additionalProperties": false
+    },
+    "supporter": {
+      "type": "object",
+      "required": ["name", "affiliation", "contact_email"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "affiliation": { "type": ["string", "null"] },
+        "contact_email": { "type": "string", "format": "email", "minLength": 3 }
+      },
+      "additionalProperties": false
+    },
+    "target_benchmark_url": { "oneOf": [{ "type": "string", "format": "uri", "pattern": "^https?://" }, { "type": "null" }] },
+    "support": {
+      "type": "object",
+      "required": ["type", "amount_usd_or_credit_value", "provider", "restrictions"],
+      "properties": {
+        "type": { "enum": ["cash", "provider_credits", "compute", "review_labor"] },
+        "amount_usd_or_credit_value": { "oneOf": [{ "type": "number", "exclusiveMinimum": 0 }, { "type": "null" }] },
+        "provider": { "type": ["string", "null"] },
+        "restrictions": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "cash" } }, "required": ["type"] }, "then": { "properties": { "amount_usd_or_credit_value": { "type": "number", "exclusiveMinimum": 0 } } } },
+        { "if": { "properties": { "type": { "enum": ["provider_credits", "compute"] } }, "required": ["type"] }, "then": { "properties": { "provider": { "type": "string", "minLength": 1 } } } },
+        { "if": { "properties": { "type": { "enum": ["provider_credits", "compute", "review_labor"] } }, "required": ["type"] }, "then": { "properties": { "restrictions": { "type": "string", "minLength": 1 } } } }
+      ],
+      "additionalProperties": false
+    },
+    "public_label": { "type": "string", "minLength": 1 },
+    "ranking_influence": { "const": false }
+  },
+  "additionalProperties": false
+}

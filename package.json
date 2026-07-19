@@ -1,0 +1,59 @@
+{
+  "name": "frontier-max-site",
+  "version": "0.3.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "install:ci": "bash scripts/install-ci.sh",
+    "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
+    "build": "bash scripts/build-verified.sh",
+    "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "test": "npm run build && npm run typecheck && node --experimental-strip-types --test tests/rendered-html.test.mjs tests/benchmark-share.test.mjs tests/run-fund-drafts.test.mjs tests/gemini-policy.test.mjs && npm run test:clock-identity && npm run test:coverage && npm run test:refresh-selection && npm run test:migrations && npm run test:cli && npm run test:scheduler && npm run check:frontier-release && npm run check:source-release",
+    "test:cli": "npm --prefix packages/frontier-cli test",
+    "test:clock-identity": "node --experimental-strip-types --test tests/vercel-clock-identity.test.mjs",
+    "test:coverage": "node --test tests/benchmark-coverage.test.mjs",
+    "test:refresh-selection": "node --test tests/refresh-selection.test.mjs",
+    "test:migrations": "node --test tests/migrations.test.mjs",
+    "test:scheduler": "npm --prefix scheduler/vercel test",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check:frontier-release": "node scripts/check-frontier-release.mjs",
+    "check:source-release": "node scripts/check-source-release.mjs",
+    "release:frontier": "bash scripts/sites-env.sh -- node scripts/sync-frontier-release.mjs",
+    "release:source": "node scripts/sync-source-release.mjs",
+    "validate:artifact": "bash scripts/validate-artifact.sh",
+    "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern scheduler/vercel/.next --ignore-pattern scheduler/vercel/app/.well-known",
+    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate",
+    "sync:benchmarklist-bootstrap": "node scripts/sync-benchmarklist-bootstrap.mjs"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2",
+    "jose": "6.2.3",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "0.31.10",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module",
+  "displayName": "Frontier Max"
+}

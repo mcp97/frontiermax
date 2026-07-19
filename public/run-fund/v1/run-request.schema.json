@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v1/run-request.schema.json",
+  "title": "Frontier Max Run Request v1",
+  "description": "Export contract for a complete, portable evaluator worksheet. Conformance does not mean the request was submitted, received, reviewed, or funded. The builder may display a non-conforming incomplete preview before export.",
+  "type": "object",
+  "required": ["schema", "status", "completeness", "submission", "applicant", "benchmark", "model_scope", "schedule", "budget", "deliverables", "artifact_license", "rights_and_permissions", "conflicts", "result_independence"],
+  "properties": {
+    "schema": { "const": "agent-frontier/run-request/v1" },
+    "status": { "const": "portable_draft" },
+    "completeness": { "const": "ready_to_export" },
+    "submission": {
+      "type": "object",
+      "required": ["state", "delivery_method", "intake_url", "submitted_at"],
+      "properties": {
+        "state": { "const": "not_submitted" },
+        "delivery_method": { "const": "copy_or_download_only" },
+        "intake_url": { "const": null },
+        "submitted_at": { "const": null }
+      },
+      "additionalProperties": false
+    },
+    "applicant": {
+      "type": "object",
+      "required": ["name", "affiliation", "contact_email"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "affiliation": { "type": ["string", "null"] },
+        "contact_email": { "type": "string", "format": "email", "minLength": 3 }
+      },
+      "additionalProperties": false
+    },
+    "benchmark": {
+      "type": "object",
+      "required": ["title", "source_url", "version_or_harness", "methodology_url"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "version_or_harness": { "type": "string", "minLength": 1 },
+        "methodology_url": { "type": "string", "format": "uri", "pattern": "^https?://" }
+      },
+      "additionalProperties": false
+    },
+    "model_scope": {
+      "type": "object",
+      "required": ["requested_models", "execution_notes"],
+      "properties": {
+        "requested_models": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+        "execution_notes": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "schedule": {
+      "type": "object",
+      "required": ["requested_completion_deadline"],
+      "properties": { "requested_completion_deadline": { "type": "string", "format": "date" } },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "required": ["requested_usd", "requested_support", "non_cash_provider_or_compute_source", "non_cash_restrictions"],
+      "properties": {
+        "requested_usd": { "type": "number", "exclusiveMinimum": 0 },
+        "requested_support": { "enum": ["cash", "provider_credits", "compute", "mixed"] },
+        "non_cash_provider_or_compute_source": { "type": ["string", "null"] },
+        "non_cash_restrictions": { "type": ["string", "null"] }
+      },
+      "allOf": [{ "if": { "properties": { "requested_support": { "enum": ["provider_credits", "compute", "mixed"] } }, "required": ["requested_support"] }, "then": { "properties": { "non_cash_provider_or_compute_source": { "type": "string", "minLength": 1 }, "non_cash_restrictions": { "type": "string", "minLength": 1 } } } }],
+      "additionalProperties": false
+    },
+    "deliverables": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+    "artifact_license": { "type": "string", "minLength": 1 },
+    "rights_and_permissions": {
+      "type": "object",
+      "required": ["basis", "artifact_publication", "notes"],
+      "properties": {
+        "basis": { "enum": ["owned_or_authorized", "public_license", "permission_pending", "rights_constrained"] },
+        "artifact_publication": { "enum": ["permitted", "conditional", "not_permitted"] },
+        "notes": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "conflicts": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+    "result_independence": { "const": true }
+  },
+  "additionalProperties": false
+}

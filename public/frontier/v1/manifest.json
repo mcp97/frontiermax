@@ -1,0 +1,93 @@
+{
+  "schema": "frontier-max/manifest/v1",
+  "version": "2026-07-18.3",
+  "cli_version": "0.2.0",
+  "status": "preview",
+  "updated_at": "2026-07-18T00:00:00.000Z",
+  "selection_scope": "sticky_openrouter_session",
+  "selection_contract": {
+    "idle_ttl_seconds": 300,
+    "may_re_resolve_after_idle": true,
+    "may_re_resolve_after_routing_error": true,
+    "may_fallback_to_neighboring_tier": true,
+    "concrete_model_observed_by_cli": false,
+    "receipt_records": "requested_route_only"
+  },
+  "content_policy": {
+    "prompt_capture": false,
+    "code_capture": false,
+    "diff_capture": false,
+    "outcomes": "local-only by default"
+  },
+  "commercial_policy": {
+    "sponsored_placement": false,
+    "provider_margin_in_objective": false,
+    "source_measurements_modified": false
+  },
+  "profiles": [
+    {
+      "id": "code.interactive",
+      "aliases": ["interactive", "fast"],
+      "label": "Interactive coding",
+      "question": "Is a person waiting?",
+      "objective": "Minimize waiting time inside the current top coding tier.",
+      "router_behavior": "Fastest available model in OpenRouter's high Artificial Analysis coding tier, ranked by p50 throughput.",
+      "openrouter_model": "openrouter/pareto-code:nitro",
+      "opencode_model": "openrouter/openrouter/pareto-code:nitro",
+      "quality_tier": "high",
+      "primary_signal": "p50 throughput",
+      "router_parameters": {
+        "plugin_id": "pareto-router",
+        "min_coding_score": 0.66
+      },
+      "limitations": [
+        "This optimizes model throughput, not total time to an accepted change.",
+        "OpenRouter does not expose a direct latency ceiling for Pareto Code.",
+        "The route is sticky while active, but may re-resolve after five idle minutes or a routing error.",
+        "If the requested tier is entirely unavailable, OpenRouter may use a neighboring tier."
+      ]
+    },
+    {
+      "id": "code.delegated",
+      "aliases": ["delegated", "frontier", "efficient"],
+      "label": "Delegated coding",
+      "question": "Can the work run in the background?",
+      "objective": "Minimize inference price inside the current top coding tier.",
+      "router_behavior": "Cheapest available model in OpenRouter's high Artificial Analysis coding tier.",
+      "openrouter_model": "openrouter/pareto-code",
+      "opencode_model": "openrouter/openrouter/pareto-code",
+      "quality_tier": "high",
+      "primary_signal": "model price",
+      "router_parameters": {
+        "plugin_id": "pareto-router",
+        "min_coding_score": 0.66
+      },
+      "limitations": [
+        "This optimizes model price, not verified cost per successful task.",
+        "OpenRouter does not expose a direct task budget for Pareto Code.",
+        "The route is sticky while active, but may re-resolve after five idle minutes or a routing error.",
+        "If the requested tier is entirely unavailable, OpenRouter may use a neighboring tier."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "publisher": "OpenRouter",
+      "title": "Pareto Router documentation",
+      "url": "https://openrouter.ai/docs/guides/routing/routers/pareto-router",
+      "role": "routing behavior and limitations"
+    },
+    {
+      "publisher": "Artificial Analysis",
+      "title": "Coding benchmark percentile",
+      "url": "https://artificialanalysis.ai/",
+      "role": "quality tier source used by OpenRouter"
+    },
+    {
+      "publisher": "OpenCode",
+      "title": "OpenCode model and provider configuration",
+      "url": "https://opencode.ai/docs/providers/",
+      "role": "execution adapter"
+    }
+  ]
+}

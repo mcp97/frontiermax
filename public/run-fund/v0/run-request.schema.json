@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v0/run-request.schema.json",
+  "title": "Frontier Max Run Request v0",
+  "type": "object",
+  "required": ["schema", "status", "benchmark", "budget", "deliverables", "result_independence"],
+  "properties": {
+    "schema": { "const": "agent-frontier/run-request/v0" },
+    "status": { "const": "draft" },
+    "benchmark": {
+      "type": "object",
+      "required": ["title", "source_url", "methodology_url"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string", "format": "uri" },
+        "version_or_harness": { "type": "string" },
+        "methodology_url": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "required": ["requested_usd", "requested_support"],
+      "properties": {
+        "requested_usd": { "type": "number", "exclusiveMinimum": 0 },
+        "requested_support": { "enum": ["cash", "provider_credits", "compute", "mixed"] },
+        "provider_credit_restrictions": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "deliverables": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+    "artifact_license": { "type": ["string", "null"] },
+    "conflicts": { "type": "array", "items": { "type": "string" } },
+    "result_independence": { "const": true }
+  },
+  "additionalProperties": false
+}

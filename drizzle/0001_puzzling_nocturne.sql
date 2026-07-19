@@ -1,0 +1,1 @@
+ALTER TABLE `refresh_state` ADD `lease_owner` text;

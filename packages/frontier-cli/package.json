@@ -1,0 +1,40 @@
+{
+  "name": "frontier-max",
+  "version": "0.2.0",
+  "description": "A policy-neutral OpenCode launcher for workload-aware OpenRouter routes.",
+  "type": "module",
+  "bin": {
+    "frontier": "bin/frontier.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "test",
+    "manifest.json",
+    "README.md",
+    "CONTRIBUTING.md",
+    "GOVERNANCE.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "opencode",
+    "openrouter",
+    "model-router",
+    "pareto",
+    "coding-agent"
+  ],
+  "homepage": "https://agent-frontier.monilpat.chatgpt.site/use",
+  "funding": "https://agent-frontier.monilpat.chatgpt.site/fund",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "license": "MIT"
+}

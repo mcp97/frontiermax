@@ -1,0 +1,86 @@
+{
+  "schema": "agent-frontier/funding-policy/v0",
+  "last_updated": "2026-07-17",
+  "status": "formation",
+  "accepting_money": false,
+  "cash_held_usd": 0,
+  "awards_or_expenses_paid": 0,
+  "rail_under_review": {
+    "selection_status": "not_selected",
+    "platform": "Open Collective",
+    "preferred_fiscal_host": "Open Source Collective",
+    "host_status": "fit_check_sent",
+    "structure_under_review": ["OSC Fund", "hosted-project program"],
+    "payment_url": null,
+    "tax_deductibility_claimed": false
+  },
+  "allocation": {
+    "basis": "gross contribution",
+    "eligible_evidence_work_minimum_percent": 80,
+    "fiscal_host": {
+      "name": "Open Source Collective",
+      "expected_percent": 10,
+      "subject_to_host_approval": true
+    },
+    "payment_processing": {
+      "treatment": "actual pass-through cost",
+      "markup": false
+    },
+    "agent_frontier_program_operations": {
+      "maximum_percent_during_pilot": 0,
+      "funded_separately_from_restricted_contributions": true
+    },
+    "remainder": "eligible benchmark execution, verification, and artifact publication",
+    "disable_payment_method_if_evidence_floor_cannot_be_met": true
+  },
+  "eligibility": {
+    "requires_pre_result_review": true,
+    "requires_public_methodology": true,
+    "requires_versioned_harness_or_protocol": true,
+    "requires_public_result_artifacts_or_disclosed_rights_constraint": true,
+    "excludes_pay_for_ranking_or_coverage": true
+  },
+  "review_and_recusal": {
+    "review_dimensions": ["request completeness", "identity", "rights", "budget reasonableness", "conflicts", "host eligibility"],
+    "expected_result_is_not_a_review_dimension": true,
+    "reviewer_conflicts_disclosed": true,
+    "conflicted_reviewers_recuse": true
+  },
+  "payout_and_failure": {
+    "preregistration_does_not_guarantee_prepayment": true,
+    "host_rules_control_prepayment_vs_reimbursement": true,
+    "actual_costs_itemized": true,
+    "unused_or_cancelled_awards_return_to_pool_or_are_refunded_under_host_policy": true,
+    "partial_and_failed_runs_publish_cost_and_failure_status": true
+  },
+  "privacy_and_ledger": {
+    "public_ledger_fields": ["support type", "restrictions", "award", "actual spend", "status", "artifacts"],
+    "public_identity_optional_when_host_policy_allows": true,
+    "private_identity_and_tax_data_handled_by_host": true,
+    "ledger_update_required_at_award_and_closeout": true
+  },
+  "principles": {
+    "funding_changes_rank": false,
+    "funding_changes_routing": false,
+    "funding_changes_editorial_treatment": false,
+    "provider_credits_labeled_separately": true,
+    "negative_and_failed_runs_remain_visible": true,
+    "conflict_disclosure_required": true,
+    "tax_deductibility_claimed": false
+  },
+  "required_before_payments": [
+    "written host guidance on OSC Fund versus hosted-project program",
+    "approval by Open Source Collective or a publicly disclosed replacement host",
+    "real Open Collective payment and ledger URL",
+    "public fee schedule",
+    "review and recusal policy",
+    "payout and refund controls",
+    "public ledger"
+  ],
+  "official_host_sources": [
+    "https://docs.oscollective.org/interested-in-joining-osc/acceptance-criteria",
+    "https://docs.oscollective.org/for-hosted-member-projects/spending-money-and-getting-paid/expense-policies-and-limitations",
+    "https://docs.oscollective.org/for-donors-companies-organizations-and-individuals/supporting-projects",
+    "https://docs.oscollective.org/welcome-and-introduction-to-osc/fees"
+  ]
+}

@@ -1,0 +1,60 @@
+FRONTIER MAX — ONE-MINUTE PROTOTYPE DEMO / PLAYCAST
+Hard limit: 60 seconds
+
+PRE-RECORDING CHECK
+
+- Record the public Cloud Run build with `GEMINI_API_KEY` active.
+- Preload the two task briefs; remove keys, unrelated tabs, and terminal history.
+- Use 1440p or higher, enlarge the browser to at least 125%, and keep the cursor deliberate.
+- Capture the CLI as a dry run unless an authenticated OpenCode/OpenRouter smoke test has passed.
+- Do not record a mock or the “Gemini not activated” error state as if it were a working integration.
+
+SHOT LIST AND NARRATION
+
+[0:00–0:05 | Homepage]
+SCREEN: Frontier Max title and “From benchmark to runtime.”
+VOICE: “Leaderboards rank models. Frontier Max decides what should run the work.”
+
+[0:05–0:12 | Evidence]
+SCREEN: Open one source-linked benchmark record; briefly point to source, evaluation contract, and provenance.
+VOICE: “We preserve the benchmark’s source and contract instead of flattening every result into one universal score.”
+
+[0:12–0:18 | Workload switch]
+SCREEN: Open `/use`; task field is visible.
+VOICE: “Because the right trade-off changes with the workload.”
+
+[0:18–0:29 | Interactive task]
+SCREEN: Submit “Fix a flaky authentication test while I pair.” Show Gemini output and `code.interactive`.
+VOICE: “For paired coding, Gemini interprets that a person is waiting. Validated code requests the fastest available model in OpenRouter’s high coding tier.”
+
+[0:29–0:40 | Delegated task]
+SCREEN: Submit “Migrate thirty endpoints overnight and open a verified PR.” Show `code.delegated`.
+VOICE: “For overnight work, quality stays gated, but cost binds. The policy requests the cheapest available model in the same tier.”
+
+[0:40–0:52 | Executable policy]
+SCREEN: Run or replay the CLI dry-run command; show requested route, manifest version, and content-free receipt.
+VOICE: “The decision is inspectable and reproducible. Gemini interprets intent; a versioned manifest owns the route.”
+
+[0:52–0:58 | Privacy/trust]
+SCREEN: Highlight the privacy sentence on `/use`.
+VOICE: “Frontier Max never proxies your prompt, code, keys, diffs, or model response.”
+
+[0:58–1:00 | End card]
+SCREEN: FRONTIER MAX — From benchmark to runtime. Current prototype: https://agent-frontier.monilpat.chatgpt.site
+VOICE: “Frontier Max. From benchmark to runtime.”
+
+RECORDING NOTE: The Sites URL is the current prototype and backup mirror. Replace it on the final end card with the verified public Cloud Run URL after that deployment is created and tested while signed out.
+
+EDIT PLAN
+
+- Record each task result as a clean separate take, then cut waiting time.
+- Keep both real Gemini response states on screen long enough to read the policy ID.
+- Add burned-in captions and a small “CLI dry run” label when applicable.
+- Export at exactly 0:59 or less; watch the final upload signed out.
+
+TRUTH CHECK BEFORE PUBLISHING
+
+- Say “requests the fastest” and “requests the cheapest,” not “always runs.”
+- Do not identify the concrete underlying model; the current CLI does not observe it.
+- Do not imply BenchmarkList records directly drive arbitrary model routes.
+- Do not call model throughput total completion latency or model price verified cost per accepted result.

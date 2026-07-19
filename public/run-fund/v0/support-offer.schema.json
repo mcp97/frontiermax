@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v0/support-offer.schema.json",
+  "title": "Frontier Max Support Offer v0",
+  "type": "object",
+  "required": ["schema", "status", "support", "ranking_influence"],
+  "properties": {
+    "schema": { "const": "agent-frontier/support-offer/v0" },
+    "status": { "const": "non_binding_draft" },
+    "target_benchmark_url": { "type": ["string", "null"], "format": "uri" },
+    "support": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["cash", "provider_credits", "compute", "review_labor"] },
+        "amount_usd_or_credit_value": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "provider": { "type": ["string", "null"] },
+        "restrictions": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "public_label": { "type": "string" },
+    "ranking_influence": { "const": false }
+  },
+  "additionalProperties": false
+}

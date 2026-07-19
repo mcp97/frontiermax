@@ -1,0 +1,7 @@
+/.next
+/.vercel
+/.swc
+/app/.well-known/
+/node_modules
+/*.tsbuildinfo
+.env*

@@ -1,0 +1,28 @@
+name: Verify Frontier Max
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - name: Install application dependencies
+        run: npm ci
+      - name: Install scheduler dependencies
+        run: npm ci --prefix scheduler/vercel
+      - name: Lint
+        run: npm run lint
+      - name: Build and test
+        run: npm test

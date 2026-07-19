@@ -1,0 +1,26 @@
+name: Publish Frontier CLI
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/frontier-cli
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+      - run: npm install --global npm@11.9.0
+      - name: Verify release tag
+        run: node -e 'const v=require("./package.json").version;if(process.env.GITHUB_REF_NAME!=="v"+v)throw new Error("Release tag must be v"+v)'
+      - run: npm test
+      - run: npm publish --access public
