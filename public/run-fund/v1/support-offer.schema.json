@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v1/support-offer.schema.json",
+  "$id": "https://agent-frontier.alignedai.chatgpt.site/run-fund/v1/support-offer.schema.json",
   "title": "Frontier Max Support Offer v1",
   "description": "Export contract for a complete, portable, non-binding support worksheet. Conformance does not mean money or credits were collected, pledged, or received. The builder may display a non-conforming incomplete preview before export.",
   "type": "object",

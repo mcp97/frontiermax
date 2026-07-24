@@ -3,7 +3,7 @@ import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 const DEFAULT_TEAM_SLUG = "monilpats-projects";
 const DEFAULT_PROJECT_NAME = "agent-frontier-clock";
 const CLOCK_AUDIENCE =
-  "https://agent-frontier.monilpat.chatgpt.site/api/benchmarklist/clock";
+  "https://agent-frontier.alignedai.chatgpt.site/api/benchmarklist/clock";
 const VERCEL_ISSUER = "https://oidc.vercel.com";
 const DEPLOYMENT_NAME = /^[a-z0-9](?:[a-z0-9._-]{0,98}[a-z0-9])?$/;
 const TEAM_ID = /^team_[A-Za-z0-9]+$/;

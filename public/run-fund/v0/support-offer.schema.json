@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v0/support-offer.schema.json",
+  "$id": "https://agent-frontier.alignedai.chatgpt.site/run-fund/v0/support-offer.schema.json",
   "title": "Frontier Max Support Offer v0",
   "type": "object",
   "required": ["schema", "status", "support", "ranking_influence"],

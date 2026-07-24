@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v0/run-request.schema.json",
+  "$id": "https://agent-frontier.alignedai.chatgpt.site/run-fund/v0/run-request.schema.json",
   "title": "Frontier Max Run Request v0",
   "type": "object",
   "required": ["schema", "status", "benchmark", "budget", "deliverables", "result_independence"],

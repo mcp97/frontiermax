@@ -47,7 +47,7 @@ test("merges attribution into existing inline OpenCode config", () => {
   assert.equal(config.provider.openrouter.options.timeout, 10);
   assert.equal(
     config.provider.openrouter.options.headers["HTTP-Referer"],
-    "https://agent-frontier.monilpat.chatgpt.site",
+    "https://agent-frontier.alignedai.chatgpt.site",
   );
   assert.equal(config.provider.openrouter.options.headers["X-OpenRouter-Title"], "Frontier Max");
   assert.equal(config.share, "manual");

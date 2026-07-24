@@ -1,5 +1,5 @@
 export const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-  || "https://agent-frontier.monilpat.chatgpt.site";
+  || "https://agent-frontier.alignedai.chatgpt.site";
 
 const SHA256_PATTERN = /^[a-f0-9]{64}$/i;
 

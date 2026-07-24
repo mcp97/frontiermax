@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agent-frontier.monilpat.chatgpt.site/run-fund/v2/run-request.schema.json",
+  "$id": "https://agent-frontier.alignedai.chatgpt.site/run-fund/v2/run-request.schema.json",
   "title": "Frontier Max Run Request v2",
   "description": "Export contract for a complete, portable evaluator worksheet. Conformance does not mean the request was submitted, received, reviewed, or funded. The builder may display a non-conforming incomplete preview before export.",
   "type": "object",

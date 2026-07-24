@@ -27,7 +27,7 @@ const REQUEST_REFRESH_LEASE_MS = 2 * 60 * 1000;
 const REQUEST_HEADERS = {
   Accept: "application/json,text/html;q=0.9,*/*;q=0.8",
   "User-Agent":
-    "FrontierMaxBenchmarkIndexer/0.2 (+https://agent-frontier.monilpat.chatgpt.site; source-attributed research index)",
+    "FrontierMaxBenchmarkIndexer/0.2 (+https://agent-frontier.alignedai.chatgpt.site; source-attributed research index)",
 };
 
 export type ScrapeEnv = {

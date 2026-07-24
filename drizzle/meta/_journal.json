@@ -29,6 +29,27 @@
       "when": 1784338697508,
       "tag": "0003_loud_wendell_rand",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784848906093,
+      "tag": "0004_slimy_khan",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1784851613130,
+      "tag": "0005_icy_lifeguard",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784851719066,
+      "tag": "0006_broken_stark_industries",
+      "breakpoints": true
     }
   ]
 }

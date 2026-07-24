@@ -101,8 +101,8 @@ cargo build --release --locked \
   --manifest-path packages/frontier-rust-cli/Cargo.toml
 ```
 
-The release workflow produces native binaries for Apple Silicon and Intel Macs,
-Linux x86-64, and Windows x86-64.
+The Rust CLI builds as a native binary. The current source release is verified
+on Linux; automated cross-platform binary releases are intentionally not enabled.
 
 The Sites runtime binds:
 

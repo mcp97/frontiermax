@@ -1,4 +1,4 @@
-import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const scrapeRuns = sqliteTable("scrape_runs", {
   id: text("id").primaryKey(),
@@ -114,5 +114,388 @@ export const benchmarkFetchAttempts = sqliteTable(
       table.startedAt,
     ),
     index("benchmark_fetch_attempts_run_idx").on(table.runId),
+  ],
+);
+
+export const publicApiCache = sqliteTable("public_api_cache", {
+  cacheKey: text("cache_key").primaryKey(),
+  sourceUrl: text("source_url").notNull(),
+  body: text("body").notNull(),
+  fetchedAt: integer("fetched_at").notNull(),
+  status: text("status").notNull().default("ready"),
+  lastError: text("last_error"),
+});
+
+export const organizations = sqliteTable("organizations", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  createdAt: integer("created_at").notNull(),
+});
+
+export const organizationMembers = sqliteTable(
+  "organization_members",
+  {
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    email: text("email").notNull(),
+    role: text("role").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.organizationId, table.email] }),
+    index("organization_members_email_idx").on(table.email),
+  ],
+);
+
+export const workloadProfiles = sqliteTable(
+  "workload_profiles",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    stableKey: text("stable_key").notNull(),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    objective: text("objective").notNull(),
+    configJson: text("config_json").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("workload_profiles_org_key_idx").on(
+      table.organizationId,
+      table.stableKey,
+    ),
+  ],
+);
+
+export const routeDecisions = sqliteTable(
+  "route_decisions",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id").references(() => organizations.id),
+    policyVersion: text("policy_version").notNull(),
+    evidenceVersion: text("evidence_version").notNull(),
+    engineVersion: text("engine_version").notNull(),
+    requestFeaturesJson: text("request_features_json").notNull(),
+    candidateSetJson: text("candidate_set_json").notNull(),
+    selectedCandidate: text("selected_candidate"),
+    manifestHash: text("manifest_hash").notNull(),
+    createdAt: integer("created_at").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+  },
+  (table) => [
+    index("route_decisions_org_created_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const leadRequests = sqliteTable(
+  "lead_requests",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    company: text("company").notNull(),
+    role: text("role").notNull(),
+    spendRange: text("spend_range"),
+    providerSummary: text("provider_summary"),
+    workloadCount: text("workload_count"),
+    privateEvals: text("private_evals"),
+    primaryConcern: text("primary_concern"),
+    description: text("description"),
+    createdAt: integer("created_at").notNull(),
+    status: text("status").notNull().default("new"),
+  },
+  (table) => [
+    index("lead_requests_created_idx").on(table.createdAt),
+    index("lead_requests_email_idx").on(table.email),
+  ],
+);
+
+export const auditEvents = sqliteTable(
+  "audit_events",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id").references(() => organizations.id),
+    actorEmail: text("actor_email").notNull(),
+    action: text("action").notNull(),
+    targetType: text("target_type").notNull(),
+    targetId: text("target_id"),
+    metadataJson: text("metadata_json").notNull().default("{}"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    index("audit_events_org_created_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const evalSets = sqliteTable(
+  "eval_sets",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    workloadKey: text("workload_key").notNull(),
+    name: text("name").notNull(),
+    version: integer("version").notNull(),
+    designation: text("designation").notNull(),
+    outcomeDefinition: text("outcome_definition").notNull(),
+    graderVersion: text("grader_version").notNull(),
+    scaffoldVersion: text("scaffold_version").notNull(),
+    evaluatedAt: text("evaluated_at").notNull(),
+    notes: text("notes"),
+    status: text("status").notNull(),
+    sourceHash: text("source_hash").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("eval_sets_org_name_version_idx").on(
+      table.organizationId,
+      table.name,
+      table.version,
+    ),
+    index("eval_sets_org_created_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const evalResults = sqliteTable(
+  "eval_results",
+  {
+    id: text("id").primaryKey(),
+    evalSetId: text("eval_set_id")
+      .notNull()
+      .references(() => evalSets.id),
+    candidateType: text("candidate_type").notNull(),
+    candidateId: text("candidate_id").notNull(),
+    caseCount: integer("case_count").notNull(),
+    successes: integer("successes").notNull(),
+    failures: integer("failures").notNull(),
+    meanRubricScore: real("mean_rubric_score"),
+    averageCost: real("average_cost"),
+    p50LatencyMs: real("p50_latency_ms"),
+    p95LatencyMs: real("p95_latency_ms"),
+    inputTokenAverage: real("input_token_average"),
+    outputTokenAverage: real("output_token_average"),
+    evaluatorVersion: text("evaluator_version").notNull(),
+    scaffoldVersion: text("scaffold_version").notNull(),
+    evaluatedAt: text("evaluated_at").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("eval_results_set_candidate_idx").on(
+      table.evalSetId,
+      table.candidateType,
+      table.candidateId,
+    ),
+    index("eval_results_set_idx").on(table.evalSetId),
+  ],
+);
+
+export const policies = sqliteTable(
+  "policies",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    stableSlug: text("stable_slug").notNull(),
+    name: text("name").notNull(),
+    status: text("status").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("policies_org_slug_idx").on(
+      table.organizationId,
+      table.stableSlug,
+    ),
+  ],
+);
+
+export const policyVersions = sqliteTable(
+  "policy_versions",
+  {
+    id: text("id").primaryKey(),
+    policyId: text("policy_id")
+      .notNull()
+      .references(() => policies.id),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    version: integer("version").notNull(),
+    workloadKey: text("workload_key").notNull(),
+    evalSetId: text("eval_set_id")
+      .notNull()
+      .references(() => evalSets.id),
+    objective: text("objective").notNull(),
+    qualityFloor: real("quality_floor").notNull(),
+    confidence: real("confidence").notNull(),
+    minimumCases: integer("minimum_cases").notNull(),
+    maximumCost: real("maximum_cost"),
+    maximumP95LatencyMs: real("maximum_p95_latency_ms"),
+    allowPublicOnly: integer("allow_public_only", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    status: text("status").notNull(),
+    artifactJson: text("artifact_json").notNull(),
+    evidenceVersion: text("evidence_version").notNull(),
+    manifestHash: text("manifest_hash").notNull(),
+    createdAt: integer("created_at").notNull(),
+    publishedAt: integer("published_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("policy_versions_policy_version_idx").on(
+      table.policyId,
+      table.version,
+    ),
+    index("policy_versions_org_published_idx").on(
+      table.organizationId,
+      table.publishedAt,
+    ),
+  ],
+);
+
+export const certifications = sqliteTable(
+  "certifications",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    policyVersionId: text("policy_version_id")
+      .notNull()
+      .references(() => policyVersions.id),
+    workloadKey: text("workload_key").notNull(),
+    candidateType: text("candidate_type").notNull(),
+    candidateId: text("candidate_id").notNull(),
+    evalSetId: text("eval_set_id")
+      .notNull()
+      .references(() => evalSets.id),
+    posteriorMean: real("posterior_mean").notNull(),
+    qualityLowerBound: real("quality_lower_bound").notNull(),
+    caseCount: integer("case_count").notNull(),
+    averageCost: real("average_cost"),
+    p95LatencyMs: real("p95_latency_ms"),
+    status: text("status").notNull(),
+    manifestHash: text("manifest_hash").notNull(),
+    limitations: text("limitations").notNull(),
+    validFrom: integer("valid_from").notNull(),
+    validUntil: integer("valid_until").notNull(),
+    createdAt: integer("created_at").notNull(),
+    revokedAt: integer("revoked_at"),
+    revocationReason: text("revocation_reason"),
+  },
+  (table) => [
+    index("certifications_org_created_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const executionOutcomes = sqliteTable(
+  "execution_outcomes",
+  {
+    id: text("id").primaryKey(),
+    routeId: text("route_id")
+      .notNull()
+      .references(() => routeDecisions.id),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    actualModel: text("actual_model"),
+    actualProvider: text("actual_provider"),
+    generationId: text("generation_id"),
+    promptTokens: integer("prompt_tokens"),
+    completionTokens: integer("completion_tokens"),
+    cachedTokens: integer("cached_tokens"),
+    reasoningTokens: integer("reasoning_tokens"),
+    actualCost: real("actual_cost"),
+    timeToFirstTokenMs: real("time_to_first_token_ms"),
+    totalLatencyMs: real("total_latency_ms"),
+    operationalErrorType: text("operational_error_type"),
+    applicationOutcome: text("application_outcome").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    index("execution_outcomes_route_idx").on(table.routeId),
+    index("execution_outcomes_org_created_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const sessionAssignments = sqliteTable(
+  "session_assignments",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    policyVersionId: text("policy_version_id")
+      .notNull()
+      .references(() => policyVersions.id),
+    sessionHash: text("session_hash").notNull(),
+    candidateId: text("candidate_id").notNull(),
+    createdAt: integer("created_at").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("session_assignments_policy_session_idx").on(
+      table.policyVersionId,
+      table.sessionHash,
+    ),
+  ],
+);
+
+export const apiKeys = sqliteTable(
+  "api_keys",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    name: text("name").notNull(),
+    prefix: text("prefix").notNull(),
+    salt: text("salt").notNull(),
+    secretHash: text("secret_hash").notNull(),
+    scopesJson: text("scopes_json").notNull(),
+    createdAt: integer("created_at").notNull(),
+    lastUsedAt: integer("last_used_at"),
+    revokedAt: integer("revoked_at"),
+  },
+  (table) => [
+    uniqueIndex("api_keys_prefix_idx").on(table.prefix),
+    index("api_keys_org_created_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const apiKeyRateLimits = sqliteTable(
+  "api_key_rate_limits",
+  {
+    apiKeyId: text("api_key_id")
+      .notNull()
+      .references(() => apiKeys.id),
+    hourBucket: integer("hour_bucket").notNull(),
+    requestCount: integer("request_count").notNull().default(0),
+  },
+  (table) => [
+    primaryKey({ columns: [table.apiKeyId, table.hourBucket] }),
   ],
 );

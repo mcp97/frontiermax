@@ -23,7 +23,7 @@ const response = await fetch(SOURCE_URL, {
   headers: {
     Accept: "application/json",
     "User-Agent":
-      "FrontierMaxBenchmarkIndexer/0.2 (+https://agent-frontier.monilpat.chatgpt.site; source-attributed research index)",
+      "FrontierMaxBenchmarkIndexer/0.2 (+https://agent-frontier.alignedai.chatgpt.site; source-attributed research index)",
   },
 });
 

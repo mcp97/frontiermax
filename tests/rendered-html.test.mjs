@@ -38,7 +38,7 @@ test("does not publish development-only preview metadata", async () => {
 });
 
 test("renders Frontier Max branding across every public product surface", async () => {
-  for (const pathname of ["/", "/benchmarks", "/benchmarks/tau_bench", "/reader", "/use", "/fund"]) {
+  for (const pathname of ["/", "/benchmarks", "/benchmarks/tau_bench", "/interpret", "/route", "/methodology", "/docs", "/audit"]) {
     const response = await render(pathname);
     const html = await response.text();
 
@@ -48,20 +48,70 @@ test("renders Frontier Max branding across every public product surface", async 
   }
 });
 
-test("renders the strict, source-preserving benchmark reader", async () => {
-  const response = await render("/reader");
+test("keeps one primary header contract across every public product surface", async () => {
+  for (const pathname of ["/", "/benchmarks", "/benchmarks/tau_bench", "/interpret", "/route", "/methodology", "/docs", "/audit"]) {
+    const response = await render(pathname);
+    const html = await response.text();
+    const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0] ?? "";
+
+    assert.equal(response.status, 200, pathname);
+    assert.match(header, /aria-label="Primary navigation"/, pathname);
+    assert.match(header, /href="\/benchmarks"[^>]*>Evidence<\//, pathname);
+    assert.match(header, /href="\/methodology"[^>]*>Methodology<\//, pathname);
+    assert.match(header, /href="\/route"[^>]*>Router Demo<\//, pathname);
+    assert.match(header, /href="\/docs"[^>]*>Docs<\//, pathname);
+    assert.match(header, /href="\/audit"[^>]*>Routing Audit<\//, pathname);
+    assert.match(header, /signin-with-chatgpt[^>]*>Sign in/, pathname);
+    assert.doesNotMatch(header, />Fund|>Reader|>Use</, pathname);
+  }
+});
+
+test("renders the workload-aware 4D measurement space on the home page", async () => {
+  const response = await render("/");
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(html, /Turn benchmarks/);
+  assert.match(html, /into.*decisions/is);
+  assert.match(html, /Interactive four-dimensional decision space/);
+  assert.match(html, /Drag to rotate the cube/);
+  assert.match(html, /X · Cost/);
+  assert.match(html, /Y · Latency/);
+  assert.match(html, /Z · Evidence/);
+  assert.match(html, /4th · Quality/);
+  assert.match(html, /aria-label="Workload lens"/);
+  assert.match(html, /Public evidence.*Private benchmarks.*Runtime outcomes/is);
+  assert.doesNotMatch(html, /Config [A-D]|SIMULATOR/i);
+});
+
+test("publishes a route-specific canonical URL on every public surface", async () => {
+  const routes = ["/", "/benchmarks", "/benchmarks/tau_bench", "/interpret", "/route"];
+  for (const pathname of routes) {
+    const response = await render(pathname);
+    const html = await response.text();
+    const canonicalPath = pathname === "/" ? "/" : pathname;
+    assert.match(
+      html,
+      new RegExp(`rel="canonical" href="https://agent-frontier\\.alignedai\\.chatgpt\\.site${canonicalPath.replaceAll("/", "\\/")}"`),
+      pathname,
+    );
+  }
+});
+
+test("renders the BenchmarkList-backed evidence interpreter without an upload surface", async () => {
+  const response = await render("/interpret");
   const html = await response.text();
 
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-  assert.match(html, /BENCHMARK READER/i);
-  assert.match(html, /frontier_schema_version/i);
-  assert.match(html, /commercial_use_status/i);
-  assert.match(html, /Illustrative sample/i);
-  assert.match(html, /Download receipt/i);
+  assert.match(html, /INTERPRET/i);
+  assert.match(html, /BenchmarkList/i);
+  assert.match(html, /See what a benchmark/i);
+  assert.match(html, /The view adapts to the dimensions/i);
+  assert.doesNotMatch(html, /upload tool/i);
 });
 
-test("renders the source-backed benchmark catalog", async () => {
+test("renders the source-backed benchmark index", async () => {
   const response = await render("/benchmarks");
   const html = await response.text();
 
@@ -70,15 +120,13 @@ test("renders the source-backed benchmark catalog", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(html, /LIVE EVIDENCE CATALOG/i);
-  assert.match(html, /Public.*benchmarks/i);
+  assert.match(html, /BENCHMARKS/i);
+  assert.match(html, /Find a.*benchmark/i);
   assert.match(html, /Search benchmarks, capabilities, or models/i);
-  assert.match(html, /Backfill status/i);
-  assert.match(html, /Detail snapshots stored on demand/i);
-  assert.match(html, /Missing cost, completion time, and token use remain unavailable/i);
+  assert.match(html, /Missing fields stay missing/i);
 });
 
-test("renders a benchmark nutrition label route", async () => {
+test("renders a source-linked benchmark evidence route", async () => {
   const response = await render("/benchmarks/tau_bench");
   const html = await response.text();
 
@@ -87,15 +135,15 @@ test("renders a benchmark nutrition label route", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(html, /BENCHMARK NUTRITION LABEL/i);
-  assert.match(html, /MEASUREMENT COVERAGE/i);
+  assert.match(html, /BENCHMARK EVIDENCE/i);
+  assert.match(html, /MEASURED DIMENSIONS/i);
   assert.match(html, /REPORTED COMPARISON SET/i);
-  assert.match(html, /One claim\. One caveat\. One source\./i);
-  assert.match(html, /Funding should explain the run/i);
+  assert.match(html, /Source and caveat included/i);
+  assert.doesNotMatch(html, /FRONTIER MAX FUNDING|No support attached to this record/i);
 });
 
-test("renders the OpenRouter and OpenCode activation route", async () => {
-  const response = await render("/use");
+test("renders the structured provisional router without an execution runtime", async () => {
+  const response = await render("/route");
   const html = await response.text();
 
   assert.equal(response.status, 200);
@@ -103,32 +151,41 @@ test("renders the OpenRouter and OpenCode activation route", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(html, /Choose the frontier/i);
-  assert.match(html, /OpenRouter × OpenCode/i);
-  assert.match(html, /Gemini 3\.5 Flash/i);
-  assert.match(html, /Interpret task with Gemini/i);
-  assert.match(html, /Content-free receipts/i);
-  assert.match(html, /policy-neutral by design/i);
-  assert.match(html, /Sticky while active/i);
-  assert.match(html, /Nothing is uploaded/i);
-  assert.match(html, /Download CLI preview/i);
-  assert.match(html, /Download MIT source/i);
+  assert.match(html, /Declare the workload/i);
+  assert.match(html, /Public evidence only/i);
+  assert.match(html, /01 \/ DECLARE/i);
+  assert.match(html, /Simulate route/i);
+  assert.match(html, /PROVISIONAL/i);
+  assert.match(html, /concrete OpenRouter model and fallbacks/i);
+  assert.match(html, /No prompt/i);
+  assert.match(html, /Your gateway executes/i);
+  assert.doesNotMatch(html, /OpenCode|Download CLI|Install the CLI|Describe the task/i);
 });
 
-test("renders the neutral Run Fund formation flow", async () => {
-  const response = await render("/fund");
+test("documents the native metadata-only Rust CLI", async () => {
+  const response = await render("/docs");
   const html = await response.text();
 
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-  assert.match(html, /Benchmarks are public infrastructure/i);
-  assert.match(html, /Founder outreach pending/i);
-  assert.match(html, /Minimum to evidence work/i);
-  assert.match(html, /Review OSC Fund structure/i);
-  assert.match(html, /Preregistration does not guarantee prepayment/i);
-  assert.match(html, /No checkout is active/i);
-  assert.match(html, /Prepare a draft/i);
-  assert.match(html, /Money can create evidence/i);
+  assert.match(html, /RUST CLI/);
+  assert.match(html, /frontier route/);
+  assert.match(html, /FRONTIER_MAX_API_KEY/);
+  assert.match(html, /does not accept prompts, model outputs, code, diffs/i);
+});
+
+test("redirects the retired Reader and Use routes", async () => {
+  const reader = await render("/reader?benchmark=tau_bench");
+  const use = await render("/use");
+
+  assert.ok([301, 302, 307, 308].includes(reader.status));
+  assert.equal(new URL(reader.headers.get("location"), "http://localhost").pathname, "/interpret");
+  assert.ok([301, 302, 307, 308].includes(use.status));
+  assert.equal(new URL(use.headers.get("location"), "http://localhost").pathname, "/route");
+});
+
+test("redirects the retired Fund route to the commercial audit", async () => {
+  const response = await render("/fund");
+  assert.ok([301, 302, 307, 308].includes(response.status));
+  assert.equal(new URL(response.headers.get("location"), "http://localhost").pathname, "/audit");
 });
 
 test("keeps the Run Fund closed until the selected host approves the public rail", async () => {
@@ -153,14 +210,15 @@ test("keeps the Run Fund closed until the selected host approves the public rail
   assert.ok(policy.required_before_payments.includes("written host guidance on OSC Fund versus hosted-project program"));
 });
 
-test("labels the synthetic frontier as a concept simulator and links the Run Fund", async () => {
+test("keeps the homepage focused on evidence and routing", async () => {
   const response = await render("/");
   const html = await response.text();
 
   assert.equal(response.status, 200);
-  assert.match(html, /THE RUN FUND/i);
-  assert.match(html, /CONCEPT SIMULATOR/i);
-  assert.match(html, /taxonomy only/i);
+  assert.match(html, /Three evidence layers/i);
+  assert.match(html, /One versioned route/i);
+  assert.match(html, /Missing evidence stays missing/i);
+  assert.doesNotMatch(html, /RUN FUND DRAFT|No money moves here/i);
 });
 
 test("accepts a same-origin bounded refresh tick and rejects cross-origin triggers", async () => {

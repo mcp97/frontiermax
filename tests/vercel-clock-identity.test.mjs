@@ -14,7 +14,7 @@ test("resolves the public production workload identity without shipping opaque I
     projectName: "agent-frontier-clock",
     projectId: null,
     audience:
-      "https://agent-frontier.monilpat.chatgpt.site/api/benchmarklist/clock",
+      "https://agent-frontier.alignedai.chatgpt.site/api/benchmarklist/clock",
     subject:
       "owner:monilpats-projects:project:agent-frontier-clock:environment:production",
     issuers: [
@@ -38,7 +38,7 @@ test("supports explicit deployment identity overrides", () => {
       projectName: "frontier-clock-canary",
       projectId: "prj_frontierclock123",
       audience:
-        "https://agent-frontier.monilpat.chatgpt.site/api/benchmarklist/clock",
+        "https://agent-frontier.alignedai.chatgpt.site/api/benchmarklist/clock",
       subject:
         "owner:frontier-lab:project:frontier-clock-canary:environment:production",
       issuers: [

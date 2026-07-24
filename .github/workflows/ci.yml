@@ -18,11 +18,18 @@ jobs:
         with:
           node-version: 22.14.0
           cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
       - name: Install application dependencies
         run: npm ci
       - name: Install scheduler dependencies
         run: npm ci --prefix scheduler/vercel
       - name: Lint
         run: npm run lint
+      - name: Verify Rust CLI
+        run: |
+          cargo fmt --manifest-path packages/frontier-rust-cli/Cargo.toml -- --check
+          cargo clippy --locked --manifest-path packages/frontier-rust-cli/Cargo.toml -- -D warnings
       - name: Build and test
         run: npm test

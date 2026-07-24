@@ -1,50 +1,90 @@
 import {
-  benchmarkListConfig,
-  getCatalog,
-  type ScrapeEnv,
-} from "../../../lib/benchmarklist";
+  getBenchmarkCatalog,
+  type PublicBenchmark,
+} from "../../../lib/public-evidence";
 
 export const dynamic = "force-dynamic";
 
-async function getRuntimeEnv() {
+async function runtimeEnv() {
   const { env } = await import("cloudflare:workers");
-  return env as unknown as ScrapeEnv;
+  return env as unknown as { DB?: D1Database };
+}
+
+function toCatalogRecord(benchmark: PublicBenchmark) {
+  const aliases = Array.isArray(benchmark.aliases)
+    ? benchmark.aliases.map(String)
+    : [];
+  const metricNames = benchmark.metrics.map((metric) => metric.label);
+  const search = [
+    benchmark.benchmark_id,
+    benchmark.name,
+    benchmark.description,
+    benchmark.category,
+    benchmark.benchmark_type,
+    benchmark.model_type,
+    benchmark.source,
+    ...aliases,
+    ...metricNames,
+  ]
+    .join(" ")
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+
+  return {
+    id: benchmark.benchmark_id,
+    title: benchmark.name,
+    description: benchmark.description || "Source-linked benchmark record.",
+    category: benchmark.category || "uncategorized",
+    url: benchmark.urls.page,
+    search,
+    priority:
+      (benchmark.review_state === "verified" ? 100_000 : 0) +
+      benchmark.stats.result_count,
+    benchmarkType: benchmark.benchmark_type,
+    modelType: benchmark.model_type,
+    reviewState: benchmark.review_state,
+    primaryMetric: benchmark.primary_metric,
+    source: benchmark.source,
+    sampledAt: benchmark.stats.latest_snapshot_at,
+    resultCount: benchmark.stats.result_count,
+    subjectCount: benchmark.stats.subject_count,
+    modelCount: benchmark.stats.model_count,
+    metrics: benchmark.metrics,
+  };
 }
 
 export async function GET() {
   try {
-    const catalog = await getCatalog(await getRuntimeEnv());
-    if (!catalog) {
-      return Response.json(
-        { error: "The BenchmarkList catalog has not been indexed yet." },
-        { status: 503, headers: { "Cache-Control": "no-store" } },
-      );
-    }
+    const result = await getBenchmarkCatalog(await runtimeEnv());
+    const benchmarks = result.data.benchmarks.map(toCatalogRecord);
     return Response.json(
       {
         meta: {
-          source: catalog.source,
-          sourceUrl: catalog.sourceUrl,
-          fetchedAt: catalog.fetchedAt,
-          parserVersion: catalog.parserVersion,
-          benchmarkCount: catalog.benchmarks.length,
-          rawRecordCount: catalog.rawRecordCount,
-          refreshWindowMs: benchmarkListConfig.catalogTtlMs,
+          source: "BenchmarkList Public Data API",
+          sourceUrl: result.sourceUrl,
+          fetchedAt: result.fetchedAt,
+          apiVersion: result.data.api_version,
+          benchmarkCount: benchmarks.length,
+          rawRecordCount: result.data.count,
+          stale: result.stale,
         },
-        benchmarks: catalog.benchmarks,
+        benchmarks,
       },
       {
         headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
-          "X-Content-Source": "BenchmarkList",
+          "Cache-Control":
+            "public, max-age=300, s-maxage=1800, stale-while-revalidate=86400",
+          "X-Content-Source": "BenchmarkList API v1",
+          "X-Evidence-Stale": String(result.stale),
         },
       },
     );
   } catch (error) {
     return Response.json(
       {
-        error: "BenchmarkList could not be refreshed right now.",
-        detail: error instanceof Error ? error.message : "Unknown indexing error",
+        error: "BenchmarkList is temporarily unavailable and no cached snapshot exists.",
+        detail: error instanceof Error ? error.message : "Unknown source error",
+        retryable: true,
       },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );

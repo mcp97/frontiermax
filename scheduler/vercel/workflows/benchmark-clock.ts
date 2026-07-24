@@ -9,7 +9,7 @@ import {
 import { start } from "workflow/api";
 
 const DEFAULT_CLOCK_URL =
-  "https://agent-frontier.monilpat.chatgpt.site/api/benchmarklist/clock";
+  "https://agent-frontier.alignedai.chatgpt.site/api/benchmarklist/clock";
 const SLOT_INTERVAL = "15m";
 const SLOT_INTERVAL_MS = 15 * 60 * 1_000;
 const CYCLE_DURATION_MS = 3 * 24 * 60 * 60 * 1_000;

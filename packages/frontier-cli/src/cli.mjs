@@ -10,7 +10,7 @@ import {
   updateDecisionRecord,
 } from "./storage.mjs";
 
-const APP_URL = "https://agent-frontier.monilpat.chatgpt.site";
+const APP_URL = "https://agent-frontier.alignedai.chatgpt.site";
 const APP_TITLE = "Frontier Max";
 const APP_CATEGORIES = "cli-agent,programming-app";
 
