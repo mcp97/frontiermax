@@ -1,68 +1,92 @@
 # Frontier Max
 
-**From benchmark to runtime.**
+**Independent model decision infrastructure.**
 
-Frontier Max makes third-party AI benchmark evidence legible, then turns an
-explicit workload policy into a reproducible model route. It consumes data; it
-does not create benchmark questions, alter source scores, or sell placement.
+Frontier Max makes benchmark evidence interpretable and turns declared workload
+requirements into inspectable model routes. Gateways move AI traffic; Frontier
+Max proves where it should go.
 
-- Live prototype: <https://agent-frontier.monilpat.chatgpt.site>
-- Source repository: <https://github.com/mcp97/frontiermax>
-- Product status: public preview
-- License: MIT (third-party benchmark data retains its original terms)
+- Live site: <https://agent-frontier.alignedai.chatgpt.site>
+- Current release: public and private benchmark evidence, immutable routing
+  policies, certification, receipts, organization controls, SDK, and native CLI
+- License: MIT; third-party data retains its original terms
 
-## Why it exists
+## Product boundary
 
-A leaderboard answers who won one evaluation contract. Production teams need a
-different answer: which policy should run this task under a quality gate and a
-real constraint such as waiting time, price, context, privacy, or reliability?
+Frontier accepts structured request metadata, not inference content. It does not
+proxy prompts or responses, store provider credentials, execute code, or
+inspect repositories.
 
-Frontier Max separates that decision into four inspectable layers:
+The intended production path is:
 
-1. **Read** — preserve the source, configuration, version, and caveat.
-2. **Decide** — identify the workload and binding resource.
-3. **Route** — resolve only to a checked-in, allowed policy.
-4. **Prove** — write a content-free local decision receipt.
+```text
+Customer application
+  -> Frontier route API (structured metadata only)
+  -> Concrete model route and fallbacks
+  -> Customer application calls OpenRouter directly
+  -> Optional metadata-only outcome report
+```
 
-## What works today
+Public-evidence routes remain labeled provisional. Organization routes require
+a locked held-out aggregate evaluation, an immutable published policy, and an
+active certification. Public scores are never presented as private pass
+probabilities.
 
-- `/benchmarks` indexes public BenchmarkList records with source provenance.
-- `/reader` is an advanced local-import tool for validating one comparable,
-  versioned cohort and producing a conditional frontier plus analysis receipt.
-- `/use` exposes two honest coding policies: interactive and delegated.
-- `/api/gemini` uses Gemini 3.5 Flash to map a short task brief onto one of those
-  policies when `GEMINI_API_KEY` is configured. It fails closed when it is not.
-- `packages/frontier-cli` launches the requested OpenRouter Pareto Code route in
-  OpenCode and keeps prompts, code, keys, diffs, and model responses out of
-  Frontier Max.
-- `/fund` prepares portable Run Fund drafts. It has no intake or payment rail.
+## What works
 
-The executable preview does **not** claim that arbitrary BenchmarkList rows
-directly select arbitrary models. Its current evidence-backed wedge uses
-OpenRouter's high Artificial Analysis coding tier:
+- `/benchmarks` reads the versioned BenchmarkList API server-side and preserves
+  source, metric direction, subject type, sampling date, and missing values.
+- `/interpret` applies one honest frame to a source benchmark and renders only
+  the dimensions that its evidence actually reports.
+- `/route` filters concrete OpenRouter model records by workload, capability,
+  context, public quality evidence, and estimated request cost. It calculates a
+  deterministic conditional Pareto set and returns a concrete model plus
+  concrete fallbacks.
+- `POST /api/v1/route` rejects prompt-bearing fields and returns versions,
+  reasons, candidate exclusions, privacy flags, expiry, and a deterministic
+  manifest hash.
+- Route decisions are stored as content-free receipts when D1 is available.
+- `/app/evals` imports aggregate private benchmark results as immutable,
+  held-out evidence. It accepts counts and timing/cost aggregates, never prompts
+  or model outputs.
+- `/app/policies` compiles versioned routing artifacts with deterministic
+  quality gates and objectives. `/app/compare` shows the actual candidate set
+  and conditional Pareto frontier.
+- `/app/certifications` certifies concrete models or external routers against a
+  frozen evidence snapshot. Certifications are hash-verified and explicitly
+  unsigned.
+- `/app/receipts` exposes content-free route receipts and accepts metadata-only
+  outcomes. Session IDs are hashed and provide bounded route stickiness.
+- `/app/settings` manages organization members and scoped API keys. Stored keys
+  are salted, peppered, hashed, rate-limited, and shown only once at creation.
+- `packages/frontier-sdk` is a standalone TypeScript-friendly source SDK for
+  routing, manifest retrieval, metadata-only outcomes, caching, and compiling
+  an OpenRouter request without exposing inference content to Frontier Max.
+- `packages/frontier-rust-cli` builds the native `frontier` binary for
+  certified routes, immutable manifests, OpenRouter handoff fragments, session
+  stickiness, and metadata-only outcomes.
+- `/methodology`, `/docs`, and `/audit` explain the method, expose the API
+  contract, and capture non-sensitive routing-audit requests.
+- `/app` uses platform-provided authenticated-user headers server-side and
+  scopes every private record to an organization.
+- `/api/health` exposes non-sensitive runtime status.
+- `/openapi.json` documents the implemented public endpoints.
 
-- `code.interactive` requests the fastest available option by p50 throughput.
-- `code.delegated` requests the cheapest available option in the same tier.
+## Data sources
 
-OpenRouter may re-resolve the underlying model after five idle minutes or a
-routing error. Frontier Max records the requested route, not a concrete model it
-cannot observe.
+The server uses:
 
-## Judge demo
+- BenchmarkList’s versioned JSON API for benchmark metadata and evidence.
+- OpenRouter’s Models API for canonical model slugs, capabilities, context, and
+  current pricing.
 
-1. Open `/benchmarks` and inspect one source-linked benchmark record.
-2. Open `/use` and submit an interactive task: “Fix a flaky authentication test
-   while I pair.”
-3. Submit a delegated task: “Migrate thirty endpoints overnight and open a
-   verified PR.”
-4. Show the validated profile, requested route, and local CLI receipt.
-
-Gemini interprets task meaning. Deterministic manifest validation owns the
-executable choice.
+External responses are cached in D1. When refresh fails, a valid cached snapshot
+is served with stale status rather than being represented as an empty result.
+Missing measurements remain null or “Not measured.”
 
 ## Local development
 
-Requirements: Node.js `>=22.13.0`, Linux, `flock`, `curl`, and GNU `timeout`.
+Requirements: Node.js `>=22.13.0`.
 
 ```bash
 cp .env.example .env.local
@@ -70,70 +94,65 @@ npm run install:ci
 npm run dev
 ```
 
-Set `GEMINI_API_KEY` only in the server environment. The key is never sent to
-the browser. Set `NEXT_PUBLIC_SITE_URL` to the public origin used for canonical
-and benchmark share URLs.
-
-## CLI preview
-
-The package has not been published to npm yet. Run it from source or download
-the versioned tarball from `/use`.
+Build the native CLI:
 
 ```bash
-node packages/frontier-cli/bin/frontier.mjs route --profile code.interactive
-node packages/frontier-cli/bin/frontier.mjs opencode --profile code.interactive --dry-run
-npm --prefix packages/frontier-cli test
+cargo build --release --locked \
+  --manifest-path packages/frontier-rust-cli/Cargo.toml
 ```
 
-OpenCode and an authenticated OpenRouter account are required for a live route.
-App attribution is explicit and enabled by default; pass `--no-attribution` to
-disable it. Receipts remain local unless a future product makes an upload
-separately visible and opt-in.
+The release workflow produces native binaries for Apple Silicon and Intel Macs,
+Linux x86-64, and Windows x86-64.
+
+The Sites runtime binds:
+
+- `DB` — D1 structured storage
+- `BUCKET` — R2 source snapshots
+
+Set `NEXT_PUBLIC_SITE_URL` to the origin used for canonical links. Production
+API-key verification also requires the secret `FRONTIER_API_KEY_PEPPER`.
 
 ## Verification
 
 ```bash
-npm run lint
+npm run typecheck
 npm test
 ```
 
-The test suite builds the application, type-checks it, renders all public
-surfaces, validates benchmark provenance and Run Fund schemas, exercises the
-Gemini policy parser, checks scheduler identity, tests the CLI, and verifies the
-downloadable CLI and source archives.
+The test suite builds and validates the Sites artifact, type-checks the source,
+renders public pages, verifies benchmark provenance, exercises the deterministic
+router, checks D1 migrations and cached-coverage behavior, and validates retained
+release artifacts.
 
-## Deployment
+## Legacy compatibility
 
-The repository supports source deployment to Cloud Run. Follow
-[`hackathon/CLOUD_RUN.md`](hackathon/CLOUD_RUN.md) and provide the Gemini key
-through Secret Manager. The static BenchmarkList catalog remains available
-without Cloudflare storage; stored benchmark-detail snapshots require the
-deployed D1/R2 bindings and are not reproduced by a plain Cloud Run instance.
-
-The deployed ChatGPT Sites origin, the `agent-frontier-clock` Vercel OIDC
-identity, and versioned `agent-frontier/*` v0/v1 schema IDs remain in source as
-compatibility identifiers. New user-facing artifacts use the Frontier Max
-namespace.
+`packages/frontier-cli`, `/api/interpret`, and archived Run Fund artifacts are
+retained only for compatibility with the earlier prototype. They are not linked
+from the primary navigation and are not part of the current Frontier Max
+decision-control-plane product.
 
 ## Repository map
 
-- `app/` — product routes and server endpoints
-- `lib/` — BenchmarkList ingestion, Gemini policy validation, and clock identity
-- `packages/frontier-cli/` — dependency-free Node.js CLI
-- `public/frontier/v1/` — current Frontier Max policy manifest
-- `public/run-fund/v2/` — current portable Run Fund export schemas
-- `scheduler/vercel/` — optional independent refresh clock
-- `hackathon/` — Google-track deployment notes and submission artifacts
-- `tests/` — product, provenance, routing, and release verification
+- `app/` — public product, authenticated shell, and API routes
+- `lib/public-evidence.ts` — upstream evidence retrieval and stale cache
+- `lib/router-engine.ts` — capability gates, cost estimates, and Pareto routing
+- `lib/organizations.ts` and `lib/app-context.ts` — authenticated organization,
+  scoped API-key, and rate-limit foundation
+- `lib/control-plane.ts` — aggregate evidence validation, conservative quality
+  bounds, Pareto comparison, and immutable artifact compilation
+- `db/` and `drizzle/` — D1 schema and migrations
+- `tests/` — rendered, provenance, routing, migration, and release checks
+- `packages/frontier-cli/` — legacy compatibility package
+- `packages/frontier-sdk/` — source SDK for the private control plane
+- `packages/frontier-rust-cli/` — native metadata-only routing CLI
 
-## Release truth boundary
+## Current limitations
 
-Before a public submission, complete these account-bound runtime checks:
-
-1. configure and verify the production Gemini key;
-2. run one authenticated OpenCode/OpenRouter smoke test.
-
-The reviewer-accessible source is published at
-<https://github.com/mcp97/frontiermax>. Everything else in the preview is
-designed to remain useful without claiming a
-learned universal router or a benchmark result that the source did not report.
+The current release is a demoable control plane, not a claim of production
+readiness. Private imports are JSON aggregate data only; illustrative demo data
+is visibly labeled and cannot substantiate a real model-performance claim.
+Certifications are hash-verified but not cryptographically signed. Model
+identity review is exact-match and read-only; manual overrides are not yet
+implemented. External routers can be evaluated and certified, but Frontier Max does
+not execute or observe the router’s downstream model choice. Outcome metadata
+is recorded but does not yet automatically recalibrate certifications.
